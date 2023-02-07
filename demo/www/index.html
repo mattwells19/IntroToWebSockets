@@ -8,8 +8,14 @@
 
     <script>
       window.addEventListener("load", () => {
-        const ws = new WebSocket("ws://localhost:4000/ws");
+        // 🔌 Connect to server using a WebSocket connection
+        const wsProtocol = window.location.protocol.includes("https")
+          ? "wss"
+          : "ws";
+        const wsPath = `${wsProtocol}://${window.location.host}/ws`;
+        const ws = new WebSocket(wsPath);
 
+        // 📩 Handle receiving a new message by adding it to the page
         const msgList = document.getElementById("msgList");
         ws.addEventListener("message", (e) => {
           const msgListItem = document.createElement("li");
@@ -17,12 +23,17 @@
           msgList.appendChild(msgListItem);
         });
 
+        // 📬 Send a new message to be broadcast to all connected clients
         const sendMsgForm = document.getElementById("sendMsg");
         sendMsgForm.addEventListener("submit", (e) => {
           e.preventDefault();
+
           const formData = new FormData(e.currentTarget);
-          const msg = formData.get("msg").toString();
-          ws.send(msg);
+          const msg = formData.get("msg").toString().trim();
+          if (msg.length > 0) {
+            ws.send(msg);
+          }
+
           sendMsgForm.reset();
         });
       });
@@ -32,7 +43,7 @@
     <h1>Intro to WebSockets Demo</h1>
     <form id="sendMsg">
       <label for="msg">Type your message</label>
-      <input type="text" id="msg" name="msg" autofocus />
+      <input type="text" id="msg" name="msg" autofocus required />
       <button type="submit">Send</button>
     </form>
     <ul id="msgList"></ul>

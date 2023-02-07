@@ -1,15 +1,17 @@
-import { serve } from "std/http/server.ts";
+import { Handler, serve } from "std/http/server.ts";
 import { serveDir } from "std/http/file_server.ts";
 
 const socketConns = new Set<WebSocket>();
 
-const handler = (req: Request): Response | Promise<Response> => {
+const handler: Handler = (req) => {
   const url = new URL(req.url);
 
+  // New WebSocket connection request thanks to the special header
   if (
     url.pathname.endsWith("/ws") &&
     req.headers.get("upgrade") === "websocket"
   ) {
+    // Upgrade connection from HTTP -> WS
     const { socket, response } = Deno.upgradeWebSocket(req);
 
     socket.addEventListener("open", () => {
@@ -32,6 +34,7 @@ const handler = (req: Request): Response | Promise<Response> => {
 
     return response;
   } else {
+    // Regular HTTP requests get served static web files
     return serveDir(req, { fsRoot: "www" });
   }
 };
