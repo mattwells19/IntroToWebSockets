@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Intro to WebSockets | Demo</title>
+
+    <script>
+      window.addEventListener("load", () => {
+        const ws = new WebSocket("ws://localhost:4000/ws");
+
+        const msgList = document.getElementById("msgList");
+        ws.addEventListener("message", (e) => {
+          const msgListItem = document.createElement("li");
+          msgListItem.innerText = e.data;
+          msgList.appendChild(msgListItem);
+        });
+
+        const sendMsgForm = document.getElementById("sendMsg");
+        sendMsgForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.currentTarget);
+          const msg = formData.get("msg").toString();
+          ws.send(msg);
+          sendMsgForm.reset();
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Intro to WebSockets Demo</h1>
+    <form id="sendMsg">
+      <label for="msg">Type your message</label>
+      <input type="text" id="msg" name="msg" autofocus />
+      <button type="submit">Send</button>
+    </form>
+    <ul id="msgList"></ul>
+  </body>
+</html>

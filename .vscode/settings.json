@@ -1,0 +1,5 @@
+{
+  "deno.enable": true,
+  "deno.enablePaths": ["./demo"],
+  "deno.config": "./demo/deno.jsonc"
+}
