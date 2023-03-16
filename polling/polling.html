@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Intro to WebSockets | Polling</title>
+
+    <script>
+      window.addEventListener("load", () => {
+        const msgList = document.getElementById("msgList");
+
+        // helper function to list all messages on the page
+        function populateMessages(messages) {
+          msgList.innerHTML = "";
+
+          messages.forEach((message) => {
+            const msgListItem = document.createElement("li");
+            msgListItem.innerText = message;
+            msgList.appendChild(msgListItem);
+          });
+        }
+
+        // on load, get all messages already sent
+        fetch("/polling/api/message")
+          .then((res) => res.json())
+          .then((messages) => populateMessages(messages));
+
+        // 📩 then poll the server every 5 seconds for new messages
+        setInterval(() => {
+          fetch("/polling/api/message")
+            .then((res) => res.json())
+            .then((messages) => populateMessages(messages));
+        }, 5000);
+
+        // 📬 handle sending a new message
+        const sendMsgForm = document.getElementById("sendMsg");
+        sendMsgForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          const formData = new FormData(e.currentTarget);
+          const msg = formData.get("msg").toString().trim();
+          if (msg.length > 0) {
+            fetch("/polling/api/message", {
+              method: "POST",
+              body: msg,
+            })
+              .then((res) => res.json())
+              .then((messages) => populateMessages(messages));
+          }
+
+          sendMsgForm.reset();
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <a href="/">Home</a>
+    <h1>Intro to WebSockets - Polling</h1>
+    <form id="sendMsg">
+      <label for="msg">Type your message</label>
+      <input type="text" id="msg" name="msg" autofocus required />
+      <button type="submit">Send</button>
+    </form>
+    <ul id="msgList"></ul>
+  </body>
+</html>

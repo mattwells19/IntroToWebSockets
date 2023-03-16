@@ -3,6 +3,6 @@
     "std/": "https://deno.land/std@0.177.0/"
   },
   "tasks": {
-    "run": "deno run --allow-net --allow-read --watch server.ts"
+    "start": "deno run --allow-net --allow-read --watch server.ts"
   }
 }

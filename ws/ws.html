@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Intro to WebSockets | Demo</title>
+    <title>Intro to WebSockets | WS</title>
 
     <script>
       window.addEventListener("load", () => {
@@ -18,9 +18,21 @@
         // 📩 Handle receiving a new message by adding it to the page
         const msgList = document.getElementById("msgList");
         ws.addEventListener("message", (e) => {
-          const msgListItem = document.createElement("li");
-          msgListItem.innerText = e.data;
-          msgList.appendChild(msgListItem);
+          if (e.data.includes("[")) {
+            const messages = JSON.parse(e.data);
+
+            msgList.innerHTML = "";
+
+            messages.forEach((message) => {
+              const msgListItem = document.createElement("li");
+              msgListItem.innerText = message;
+              msgList.appendChild(msgListItem);
+            });
+          } else {
+            const msgListItem = document.createElement("li");
+            msgListItem.innerText = e.data;
+            msgList.appendChild(msgListItem);
+          }
         });
 
         // 📬 Send a new message to be broadcast to all connected clients
@@ -40,7 +52,8 @@
     </script>
   </head>
   <body>
-    <h1>Intro to WebSockets Demo</h1>
+    <a href="/">Home</a>
+    <h1>Intro to WebSockets | WebSockets</h1>
     <form id="sendMsg">
       <label for="msg">Type your message</label>
       <input type="text" id="msg" name="msg" autofocus required />
