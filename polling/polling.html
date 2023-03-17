@@ -9,6 +9,7 @@
     <script>
       window.addEventListener("load", () => {
         const msgList = document.getElementById("msgList");
+        const sendMsgForm = document.getElementById("sendMsg");
 
         // helper function to list all messages on the page
         function populateMessages(messages) {
@@ -34,7 +35,6 @@
         }, 5000);
 
         // 📬 handle sending a new message
-        const sendMsgForm = document.getElementById("sendMsg");
         sendMsgForm.addEventListener("submit", (e) => {
           e.preventDefault();
 
@@ -59,7 +59,14 @@
     <h1>Intro to WebSockets - Polling</h1>
     <form id="sendMsg">
       <label for="msg">Type your message</label>
-      <input type="text" id="msg" name="msg" autofocus required />
+      <input
+        type="text"
+        id="msg"
+        name="msg"
+        autofocus
+        required
+        autocomplete="off"
+      />
       <button type="submit">Send</button>
     </form>
     <ul id="msgList"></ul>

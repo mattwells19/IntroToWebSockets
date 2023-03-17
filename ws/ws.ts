@@ -5,6 +5,10 @@ const socketConns = new Set<WebSocket>();
 const messages: Array<string> = [];
 
 export const wsHandler: Handler = (req) => {
+  if (req.method === "GET" && req.url.endsWith("/ws/api/message")) {
+    return new Response(JSON.stringify(messages));
+  }
+
   // New WebSocket connection request thanks to the special header
   if (req.url.endsWith("/ws") && req.headers.get("upgrade") === "websocket") {
     // Upgrade connection from HTTP -> WS
@@ -12,7 +16,6 @@ export const wsHandler: Handler = (req) => {
 
     socket.addEventListener("open", () => {
       socketConns.add(socket);
-      socket.send(JSON.stringify(messages));
     });
 
     socket.addEventListener("message", (e) => {

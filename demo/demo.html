@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Intro to WebSockets | WS</title>
+    <title>Intro to WebSockets | Demo</title>
 
     <script>
       window.addEventListener("load", () => {
@@ -23,28 +23,30 @@
         }
 
         // on load, get all messages already sent
-        fetch("/ws/api/message")
+        fetch("/api/message")
           .then((res) => res.json())
           .then((messages) => populateMessages(messages));
 
-        // 🔌 Connect to server using a WebSocket connection
-        const ws = new WebSocket("ws://localhost:4000/ws");
+        // 📩 then poll the server every 5 seconds for new messages
+        setInterval(() => {
+          fetch("/api/message")
+            .then((res) => res.json())
+            .then((messages) => populateMessages(messages));
+        }, 5000);
 
-        // 📩 Handle receiving a new message by adding it to the page
-        ws.addEventListener("message", (e) => {
-          const msgListItem = document.createElement("li");
-          msgListItem.innerText = e.data;
-          msgList.appendChild(msgListItem);
-        });
-
-        // 📬 Send a new message to be broadcast to all connected clients
+        // 📬 handle sending a new message
         sendMsgForm.addEventListener("submit", (e) => {
           e.preventDefault();
 
           const formData = new FormData(e.currentTarget);
           const msg = formData.get("msg").toString().trim();
           if (msg.length > 0) {
-            ws.send(msg);
+            fetch("/api/message", {
+              method: "POST",
+              body: msg,
+            })
+              .then((res) => res.json())
+              .then((messages) => populateMessages(messages));
           }
 
           sendMsgForm.reset();
@@ -54,7 +56,7 @@
   </head>
   <body>
     <a href="/">Home</a>
-    <h1>Intro to WebSockets | WebSockets</h1>
+    <h1>Intro to WebSockets - Demo</h1>
     <form id="sendMsg">
       <label for="msg">Type your message</label>
       <input
